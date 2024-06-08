@@ -1,5 +1,6 @@
 import User from '../Model/user.modal.js'
 import bcrypt from 'bcryptjs'
+import createTokenAndSaveCookie from '../jwt/generateToken.js'
 
  const signup = async (req,res)=>{
     const {fullname,password,email} = req.body
@@ -19,7 +20,11 @@ import bcrypt from 'bcryptjs'
         password:hashPassword,
     })
     await newUser.save()
-    res.status(201).json({message:"User created successfully"})
+    if(newUser){
+        createTokenAndSaveCookie(newUser._ud,res)
+        res.status(201).json({message:"User created successfully",newUser})
+
+    }
 
    } catch (error) {
     console.log(error);
