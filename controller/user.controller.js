@@ -32,4 +32,39 @@ import createTokenAndSaveCookie from '../jwt/generateToken.js'
    }
 }
 
-export default signup
+
+
+
+const login = async(req,res)=>{ 
+    const {email,password} = req.body
+    try {
+        const user = await User.findOne({email})
+        const isMatch = await bcrypt.compare(password,user.password)
+
+        if(!user || !isMatch){
+            return res.status(400).json({error:"invalid user credential"})
+        }
+        createTokenAndSaveCookie(user._id,res)
+        res.status(200).json({message:"user logged in successfully",user:{
+            _id:user.id,
+            fullname : user.fullname,
+            email:user.email
+        }})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error:"Internal server error"})
+    }
+}
+
+const logout = async (req,res)=>{
+    try {
+        res.clearCookie("jwt")
+        res.status(201).json({message:"User logged out successfully"})
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error:"Internal server error"})
+    }
+}
+
+export { login, signup,logout };
