@@ -2,6 +2,7 @@ import User from '../Model/user.modal.js'
 import bcrypt from 'bcryptjs'
 import createTokenAndSaveCookie from '../jwt/generateToken.js'
 
+
  const signup = async (req,res)=>{
     const {fullname,password,email} = req.body
    try {
@@ -21,8 +22,14 @@ import createTokenAndSaveCookie from '../jwt/generateToken.js'
     })
     await newUser.save()
     if(newUser){
-        createTokenAndSaveCookie(newUser._ud,res)
-        res.status(201).json({message:"User created successfully",newUser})
+        createTokenAndSaveCookie(newUser._id,res)
+        res.status(201).json({message:"User created successfully",
+            user:{
+            _id:newUser.id,
+            fullname : newUser.fullname,
+            email:newUser.email
+        }
+        })
 
     }
 
@@ -44,6 +51,7 @@ const login = async(req,res)=>{
         if(!user || !isMatch){
             return res.status(400).json({error:"invalid user credential"})
         }
+
         createTokenAndSaveCookie(user._id,res)
         res.status(200).json({message:"user logged in successfully",user:{
             _id:user.id,
@@ -67,4 +75,15 @@ const logout = async (req,res)=>{
     }
 }
 
-export { login, signup,logout };
+
+const allUser = async(req,res)=>{
+    try {
+        const loggedInUser = req.user._id;
+        const filteredUsers = await User.find({_id:{$ne:loggedInUser}}).select("-password") //$ne means not equal
+        res.status(201).json(filteredUsers)
+    } catch (error) {
+        console.log("error in allUsers controller:" +error);
+    }
+}
+
+export { login, signup,logout,allUser };
