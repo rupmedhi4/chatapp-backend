@@ -2,11 +2,11 @@ import express from "express"
 import dotenv from "dotenv"
 import cors from 'cors'
 import cookieParser from "cookie-parser"
-const app = express()
 import mongoose from "mongoose"
 
 import userRoute from './routes/user.route.js'
 import messageRoute from "./routes/message.route.js"
+import { app,server } from "./SocketIO/server.js"
 
 
 dotenv.config()
@@ -32,7 +32,7 @@ app.use("/user", userRoute)
 app.use("/message", messageRoute)
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`)
 })
 
