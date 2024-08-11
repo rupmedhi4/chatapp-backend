@@ -31,6 +31,9 @@ try {
 app.use("/user", userRoute)
 app.use("/message", messageRoute)
 
+app.get("/", (req,res)=>{
+  res.status(200).send("this app is running")
+})
 
 server.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`)
